@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Psychic Guacamole</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+        .avocado {
+            font-size: 4em;
+            margin: 20px 0;
+        }
+        button {
+            background: linear-gradient(45deg, #68d391, #38a169);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+        }
+        .prediction {
+            background: #f7fafc;
+            border-left: 4px solid #68d391;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        .confidence {
+            color: #718096;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 Psychic Guacamole</h1>
+        <div class="avocado">🥑</div>
+        <p>Welcome to the mystical world of avocado predictions!</p>
+        
+        <button onclick="getPrediction()">Get Your Prediction</button>
+        <button onclick="checkHealth()">Check Server Health</button>
+        
+        <div id="prediction" class="prediction">
+            <div id="predictionText"></div>
+            <div id="confidence" class="confidence"></div>
+        </div>
+    </div>
+
+    <script>
+        async function getPrediction() {
+            try {
+                const response = await fetch('/api/psychic');
+                const data = await response.json();
+                
+                document.getElementById('predictionText').innerHTML = `<strong>"${data.prediction}"</strong>`;
+                document.getElementById('confidence').innerHTML = `Confidence: ${data.confidence}%`;
+                document.getElementById('prediction').style.display = 'block';
+            } catch (error) {
+                alert('Failed to get prediction: ' + error.message);
+            }
+        }
+
+        async function checkHealth() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                document.getElementById('predictionText').innerHTML = `
+                    <strong>Server Status: ${data.status}</strong><br>
+                    Uptime: ${Math.floor(data.uptime)} seconds<br>
+                    Memory Usage: ${Math.round(data.memory.heapUsed / 1024 / 1024)} MB
+                `;
+                document.getElementById('confidence').innerHTML = `Last checked: ${new Date(data.timestamp).toLocaleTimeString()}`;
+                document.getElementById('prediction').style.display = 'block';
+            } catch (error) {
+                alert('Failed to check health: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
